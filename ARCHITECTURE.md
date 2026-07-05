@@ -105,7 +105,7 @@ A torus knot "woven" from 24,000 particles (ported from 21st.dev's woven-light-h
 - **Geometry**: particle positions are sampled from a `TorusKnotGeometry` and colored along a photon→qubit gradient per strand position (computed once in `useMemo`).
 - **Physics** (per frame, allocation-free scalar math on `Float32Array`s): the cursor repels particles within a radius; displaced particles spring back to their home position with damping (`velocity = (velocity + (home − pos) · k) · damping`).
 - **Screen-space repulsion**: the cursor's influence is a *depth column*, not a sphere — distance is measured in world x/y only, with the particle's x rotated into world space to account for the knot's slow spin. This makes strands on both the near and far side ripple under the pointer.
-- **Layering in the hero** (`components/home/Hero.tsx`), back to front: CSS gradient fallback → canvas (desktop only, skipped under reduced motion) → **pointer-transparent scrim** (radial vignette that restores text contrast) → copy (itself `pointer-events-none` except CTAs). The scrim and text layers must stay `pointer-events-none` or the canvas stops receiving mouse events — this exact bug happened once.
+- **Layering in the hero** (`components/home/Hero.tsx`), back to front: CSS gradient fallback → canvas (all viewports; skipped under reduced motion) → **pointer-transparent scrim** (radial vignette that restores text contrast) → copy (itself `pointer-events-none` except CTAs). The scrim and text layers must stay `pointer-events-none` or the canvas stops receiving mouse events — this exact bug happened once.
 
 ### 6.2 Interactive Bloch sphere (`components/software/InteractiveBlochSphere.tsx` + `lib/quantum.ts`)
 
@@ -133,7 +133,7 @@ Editing content requires no knowledge of the components: change the data file, t
 ## 8. Accessibility & Performance Decisions
 
 - **Reduced motion** is honored at three levels: Framer's `MotionConfig` (declarative animations), `useReducedMotionPref()` (WebGL canvases removed, oscillation/magnetics/gate sweeps disabled), and instant state jumps replacing animated ones.
-- **Mobile**: the hero canvas is `hidden md:block` with a static CSS radial-gradient behind it; grids stack via standard Tailwind breakpoints; the Bloch canvas is `touch-none` so dragging doesn't scroll the page.
+- **Mobile**: the hero canvas runs everywhere but scales itself down under 768px (10k particles instead of 24k, dpr cap 1.25, camera pulled back so the knot fits narrow screens), with a static CSS radial-gradient behind it as the reduced-motion fallback; grids stack via standard Tailwind breakpoints; the Bloch canvas is `touch-none` so dragging doesn't scroll the page.
 - **Bundle**: three.js loads only via the lazy canvases; `react-syntax-highlighter` uses `PrismLight` with only Python registered; both canvases cap `dpr` at 1.5 and use `antialias: false` (hero).
 - **Contrast**: hero text sits on a radial scrim + dark text-shadows to hold ≥4.5:1 over the bright particle field (gradient-clipped text gets `text-shadow: none` since shadows bleed through transparent glyphs).
 - **Known constraint**: `lucide-react` v1 removed brand icons, so GitHub/LinkedIn glyphs are inline SVGs in `components/ui/BrandIcons.tsx`.

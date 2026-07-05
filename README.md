@@ -52,4 +52,4 @@ Zero-config on [Vercel](https://vercel.com): import the repo and deploy. Every r
 
 ## Accessibility
 
-Animations respect `prefers-reduced-motion` (via a `MotionProvider` context): the WebGL scenes, kinetic typography, magnetic buttons, and gate animations are disabled or made instant for users who prefer reduced motion. The hero canvas is also skipped on mobile in favor of a static gradient.
+Animations respect `prefers-reduced-motion` (via a `MotionProvider` context): the WebGL scenes, kinetic typography, magnetic buttons, and gate animations are disabled or made instant for users who prefer reduced motion (a static gradient stands in for the hero canvas). On mobile the hero scene runs with a reduced particle count and pixel ratio.

@@ -22,9 +22,10 @@ export default function Hero() {
         aria-hidden
         className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(0,240,255,0.06),transparent),radial-gradient(ellipse_50%_40%_at_70%_70%,rgba(255,0,127,0.05),transparent)]"
       />
-      {/* 3D particle field — desktop only, disabled for reduced motion */}
+      {/* 3D particle field — all viewports (scaled down internally on
+          mobile), disabled for reduced motion */}
       {!reduced && (
-        <div aria-hidden className="absolute inset-0 hidden md:block">
+        <div aria-hidden className="absolute inset-0">
           <ParticleField />
         </div>
       )}
