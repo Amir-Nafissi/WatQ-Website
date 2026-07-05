@@ -5,12 +5,12 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Points, PointMaterial } from "@react-three/drei";
 import { Color, TorusKnotGeometry, type Points as ThreePoints } from "three";
 
-const DESKTOP_COUNT = 24000;
-const MOBILE_COUNT = 10000;
-const REPEL_RADIUS = 1.1;
-const REPEL_STRENGTH = 0.012;
-const RETURN_STRENGTH = 0.002;
-const DAMPING = 0.94;
+const DESKTOP_COUNT = 50000;
+const MOBILE_COUNT = 18000;
+const REPEL_RADIUS = 1.5;
+const REPEL_STRENGTH = 0.01;
+const RETURN_STRENGTH = 0.001;
+const DAMPING = 0.95;
 
 // deterministic PRNG (mulberry32) — pure under React's render rules and
 // gives the same particle field on every mount
@@ -30,7 +30,7 @@ function mulberry32(seed: number) {
  */
 function buildWeave(count: number) {
   const rand = mulberry32(0x9e3779b9);
-  const knot = new TorusKnotGeometry(1.5, 0.45, 220, 36);
+  const knot = new TorusKnotGeometry(1.5, 0.5, 200, 32);
   const source = knot.attributes.position;
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
@@ -75,19 +75,18 @@ function WovenKnot({ count, active }: { count: number; active: React.RefObject<b
     const { originals, velocities } = sim.current;
 
     const t = state.clock.getElapsedTime();
-    points.rotation.y = t * 0.08;
+    points.rotation.y = t * 0.05;
 
-    // Screen-space (cylindrical) repulsion: distance to the cursor is
-    // measured in world x/y only, ignoring depth, so every strand under
-    // the pointer ripples — near side and far side alike. Until the first
-    // real pointer move, `state.pointer` sits at (0,0) — dead centre —
-    // which would blow a hole in the middle of the knot on load, so we
-    // hold off any repulsion until the cursor has actually moved.
+    // True 3D repulsion (as in the original "Woven Light" component): the
+    // cursor maps to a world point fixed on the z=0 plane, and particles are
+    // pushed radially away from it in all three axes. Positions are compared
+    // in the knot's *local* (unrotated) frame, so the disturbance swirls with
+    // the spin. Until the first real pointer move, `state.pointer` sits at
+    // (0,0) — dead centre — which would blow a hole in the middle of the knot
+    // on load, so we hold off any repulsion until the cursor has actually moved.
     const repel = active.current;
-    const wx = state.pointer.x * 3.2;
-    const wy = state.pointer.y * 3.2;
-    const cos = Math.cos(points.rotation.y);
-    const sin = Math.sin(points.rotation.y);
+    const mx = state.pointer.x * 3;
+    const my = state.pointer.y * 3;
 
     const pos = points.geometry.attributes.position
       .array as Float32Array;
@@ -98,19 +97,17 @@ function WovenKnot({ count, active }: { count: number; active: React.RefObject<b
       const iy = ix + 1;
       const iz = ix + 2;
 
-      // particle x in world space (knot only rotates around Y, so world y = local y)
-      const xw = pos[ix] * cos + pos[iz] * sin;
-      const dx = xw - wx;
-      const dy = pos[iy] - wy;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+      const dx = pos[ix] - mx;
+      const dy = pos[iy] - my;
+      const dz = pos[iz];
+      const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
       if (repel && dist < REPEL_RADIUS && dist > 1e-4) {
+        // push away along the normalized (dx, dy, dz) direction
         const force = ((REPEL_RADIUS - dist) * REPEL_STRENGTH) / dist;
-        // world-space push (dx, dy, 0), rotated back into the knot's frame
-        const fx = dx * force;
-        velocities[ix] += fx * cos;
+        velocities[ix] += dx * force;
         velocities[iy] += dy * force;
-        velocities[iz] += fx * sin;
+        velocities[iz] += dz * force;
       }
 
       // spring back into the weave, then damp
@@ -142,10 +139,10 @@ function WovenKnot({ count, active }: { count: number; active: React.RefObject<b
       <PointMaterial
         transparent
         vertexColors
-        size={0.016}
+        size={0.02}
         sizeAttenuation
         depthWrite={false}
-        opacity={0.85}
+        opacity={1}
       />
     </Points>
   );
@@ -166,7 +163,7 @@ export default function ParticleField() {
   return (
     <Canvas
       // pull the camera back on narrow screens so the knot fits the width
-      camera={{ position: [0, 0, mobile ? 6.6 : 5], fov: 70 }}
+      camera={{ position: [0, 0, mobile ? 6.6 : 5], fov: 75 }}
       dpr={[1, mobile ? 1.25 : 1.5]}
       gl={{ antialias: false, alpha: true }}
       className="!absolute inset-0"
