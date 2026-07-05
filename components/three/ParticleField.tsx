@@ -54,7 +54,7 @@ function buildWeave(count: number) {
   return { positions, colors };
 }
 
-function WovenKnot({ count }: { count: number }) {
+function WovenKnot({ count, active }: { count: number; active: React.RefObject<boolean> }) {
   const ref = useRef<ThreePoints>(null);
 
   const { positions, colors } = useMemo(() => buildWeave(count), [count]);
@@ -79,7 +79,11 @@ function WovenKnot({ count }: { count: number }) {
 
     // Screen-space (cylindrical) repulsion: distance to the cursor is
     // measured in world x/y only, ignoring depth, so every strand under
-    // the pointer ripples — near side and far side alike.
+    // the pointer ripples — near side and far side alike. Until the first
+    // real pointer move, `state.pointer` sits at (0,0) — dead centre —
+    // which would blow a hole in the middle of the knot on load, so we
+    // hold off any repulsion until the cursor has actually moved.
+    const repel = active.current;
     const wx = state.pointer.x * 3.2;
     const wy = state.pointer.y * 3.2;
     const cos = Math.cos(points.rotation.y);
@@ -100,7 +104,7 @@ function WovenKnot({ count }: { count: number }) {
       const dy = pos[iy] - wy;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      if (dist < REPEL_RADIUS && dist > 1e-4) {
+      if (repel && dist < REPEL_RADIUS && dist > 1e-4) {
         const force = ((REPEL_RADIUS - dist) * REPEL_STRENGTH) / dist;
         // world-space push (dx, dy, 0), rotated back into the knot's frame
         const fx = dx * force;
@@ -154,6 +158,11 @@ export default function ParticleField() {
     () => typeof window !== "undefined" && window.innerWidth < 768
   );
 
+  // Repulsion stays off until the cursor genuinely moves; without this the
+  // pointer's default (0,0) reads as a hover dead-centre and punches a hole
+  // in the knot on first load.
+  const active = useRef(false);
+
   return (
     <Canvas
       // pull the camera back on narrow screens so the knot fits the width
@@ -161,8 +170,11 @@ export default function ParticleField() {
       dpr={[1, mobile ? 1.25 : 1.5]}
       gl={{ antialias: false, alpha: true }}
       className="!absolute inset-0"
+      onPointerMove={() => {
+        active.current = true;
+      }}
     >
-      <WovenKnot count={mobile ? MOBILE_COUNT : DESKTOP_COUNT} />
+      <WovenKnot count={mobile ? MOBILE_COUNT : DESKTOP_COUNT} active={active} />
     </Canvas>
   );
 }
