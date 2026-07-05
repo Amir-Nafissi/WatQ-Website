@@ -5,14 +5,24 @@ Website for WatQ, an undergraduate quantum design team at the University of Wate
 - **Hardware** — photonics-based quantum chip design (silicon photonics, Mach–Zehnder interferometers, photon-pair sources)
 - **Software** — Qiskit implementations and visualizations of quantum algorithms (Grover's, VQE, QAOA)
 
-100% frontend, statically generated — no backend, no database. All content lives in `/data`.
+100% frontend, statically generated — no backend, no database. All content lives in `/data`. See [ARCHITECTURE.md](ARCHITECTURE.md) for a detailed breakdown of how the site is built.
+
+## Pages & highlights
+
+| Route | What's there |
+| --- | --- |
+| `/` | Hero with an interactive WebGL torus knot woven from 24k light particles (cursor repels the strands), sub-team split cards, manifesto |
+| `/hardware` | Photonics explainer, Mach–Zehnder interferometer SVG that draws itself on scroll, chip roadmap timeline |
+| `/software` | **Interactive 3D Bloch sphere** — drag the state vector, apply X/Y/Z/H/S/T gates with animated rotations, live θ/φ/Dirac/probability readout — plus a tabbed algorithm showcase with syntax-highlighted Qiskit code |
+| `/team` | Staggered grid of member cards, accent-coded by sub-team |
+| `/join` | Termly recruitment info and a qubit-state toggle that flips between Hardware and Software track requirements |
 
 ## Stack
 
-- [Next.js](https://nextjs.org) (App Router) + TypeScript
-- Tailwind CSS v4 (design tokens in `app/globals.css`)
+- [Next.js 16](https://nextjs.org) (App Router, Turbopack) + TypeScript + React 19
+- Tailwind CSS v4 (design tokens in `app/globals.css`, no `tailwind.config`)
 - Framer Motion — page transitions, scroll reveals, micro-interactions
-- React Three Fiber + drei — hero particle field ("Observer Effect")
+- React Three Fiber + drei — hero particle knot and the interactive Bloch sphere (single-qubit math in `lib/quantum.ts`)
 - lucide-react, react-syntax-highlighter, `next/font` (Inter + JetBrains Mono)
 
 ## Development
@@ -21,8 +31,10 @@ Website for WatQ, an undergraduate quantum design team at the University of Wate
 npm install
 npm run dev      # http://localhost:3000
 npm run build    # production build — all routes prerender as static
-npx eslint .     # lint
+npx eslint .     # lint (ESLint 9 + React Compiler rules)
 ```
+
+There is no test suite; `npm run build` doubles as the type check. Repo guidance for AI-assisted development lives in [CLAUDE.md](CLAUDE.md).
 
 ## Editing content
 
@@ -40,4 +52,4 @@ Zero-config on [Vercel](https://vercel.com): import the repo and deploy. Every r
 
 ## Accessibility
 
-Animations respect `prefers-reduced-motion` (via a `MotionProvider` context): the 3D particle field, kinetic typography, and magnetic-button effects are disabled for users who prefer reduced motion. The 3D canvas is also skipped on mobile in favor of a static gradient.
+Animations respect `prefers-reduced-motion` (via a `MotionProvider` context): the WebGL scenes, kinetic typography, magnetic buttons, and gate animations are disabled or made instant for users who prefer reduced motion. The hero canvas is also skipped on mobile in favor of a static gradient.
