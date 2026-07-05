@@ -59,6 +59,7 @@ interface SceneProps {
   onFrame: (theta: number, phi: number, animating: boolean) => void;
   dragging: boolean;
   setDragging: (v: boolean) => void;
+  setOrbiting: (v: boolean) => void;
 }
 
 function BlochScene({
@@ -67,6 +68,7 @@ function BlochScene({
   onFrame,
   dragging,
   setDragging,
+  setOrbiting,
 }: SceneProps) {
   const vectorGroup = useRef<import("three").Group>(null);
   const scratch = useMemo(
@@ -175,8 +177,6 @@ function BlochScene({
             (e.target as HTMLElement).releasePointerCapture(e.pointerId);
             setDragging(false);
           }}
-          onPointerOver={() => (document.body.style.cursor = "grab")}
-          onPointerOut={() => (document.body.style.cursor = "auto")}
         >
           <sphereGeometry args={[0.22, 12, 8]} />
           <meshBasicMaterial visible={false} />
@@ -190,6 +190,8 @@ function BlochScene({
         rotateSpeed={0.6}
         minPolarAngle={0.3}
         maxPolarAngle={Math.PI - 0.3}
+        onStart={() => setOrbiting(true)}
+        onEnd={() => setOrbiting(false)}
       />
     </>
   );
@@ -204,6 +206,7 @@ export default function InteractiveBlochSphere() {
   const lastReadout = useRef({ theta: -1, phi: -1 });
 
   const [dragging, setDragging] = useState(false);
+  const [orbiting, setOrbiting] = useState(false);
   const [animating, setAnimating] = useState(false);
   const [angles, setAngles] = useState({ theta: 0, phi: 0 });
 
@@ -269,8 +272,12 @@ export default function InteractiveBlochSphere() {
   return (
     <div>
       <div className="grid items-center gap-6 sm:grid-cols-[1.2fr_1fr]">
-        {/* 3D sphere */}
-        <div className="relative mx-auto aspect-square w-full max-w-sm touch-none">
+        {/* 3D sphere — grab cursor everywhere (tip-drag or orbit) */}
+        <div
+          className={`relative mx-auto aspect-square w-full max-w-sm touch-none ${
+            dragging || orbiting ? "cursor-grabbing" : "cursor-grab"
+          }`}
+        >
           <Canvas camera={{ position: [2.2, 1.4, 2.6], fov: 45 }} dpr={[1, 1.5]}>
             <BlochScene
               blochRef={blochRef}
@@ -278,6 +285,7 @@ export default function InteractiveBlochSphere() {
               onFrame={handleFrame}
               dragging={dragging}
               setDragging={setDragging}
+              setOrbiting={setOrbiting}
             />
           </Canvas>
         </div>
