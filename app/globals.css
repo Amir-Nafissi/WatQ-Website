@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void: #050508;
+  --color-panel: #0a0a0f;
+  --color-photon: #ff007f;
+  --color-photon-deep: #d900ff;
+  --color-qubit: #00f0ff;
+  --color-ink: #e2e8f0;
+  --color-ink-dim: #94a3b8;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
+@utility glass {
+  background-color: rgb(255 255 255 / 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(255 255 255 / 0.1);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-void);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: rgb(0 240 255 / 0.25);
+}
