@@ -11,7 +11,7 @@ export interface TeamMember {
 
 export const team: TeamMember[] = [
   {
-    name: "Aisha Rahman",
+    name: "Maya Lindqvist",
     role: "Team Captain",
     subteam: "Lead",
     major: "Engineering Physics",
