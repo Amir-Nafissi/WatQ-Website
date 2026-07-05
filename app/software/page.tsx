@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import KineticHeading from "@/components/motion/KineticHeading";
 import Reveal from "@/components/motion/Reveal";
 import AlgorithmShowcase from "@/components/software/AlgorithmShowcase";
-import BlochSphere from "@/components/software/BlochSphere";
+import BlochSphereSection from "@/components/software/BlochSphereSection";
 
 export const metadata: Metadata = {
   title: "Software",
@@ -33,10 +33,10 @@ export default function SoftwarePage() {
         </Reveal>
       </section>
 
-      {/* bloch sphere */}
-      <section className="mx-auto mt-28 grid max-w-5xl items-center gap-12 md:grid-cols-2">
+      {/* interactive bloch sphere */}
+      <section className="mx-auto mt-28 max-w-5xl">
         <Reveal>
-          <div>
+          <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-2xl font-bold text-ink sm:text-3xl">
               One qubit, infinite states
             </h2>
@@ -46,20 +46,15 @@ export default function SoftwarePage() {
               <span className="font-mono text-sm text-qubit">
                 α|0⟩ + β|1⟩
               </span>{" "}
-              of both. Quantum gates are rotations of this sphere, and
-              algorithms are choreographies of rotations that end with the
-              answer standing at a pole.
-            </p>
-            <p className="mt-4 leading-relaxed text-ink-dim">
-              Our visualization tools animate exactly this: watch a state
-              vector precess under a Hamiltonian, or trace the path Grover
-              iterations carve toward a marked state.
+              of both. Quantum gates are rotations of this sphere. Try it:
+              drag the state vector, or apply real gates and watch the qubit
+              rotate.
             </p>
           </div>
         </Reveal>
         <Reveal delay={0.15}>
-          <div className="glass rounded-3xl p-10">
-            <BlochSphere />
+          <div className="glass mt-12 rounded-3xl p-6 sm:p-10">
+            <BlochSphereSection />
           </div>
         </Reveal>
       </section>
