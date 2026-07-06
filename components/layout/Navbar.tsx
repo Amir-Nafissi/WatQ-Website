@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
@@ -21,12 +22,16 @@ export default function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       <nav className="glass mx-auto mt-4 flex max-w-6xl items-center justify-between rounded-2xl px-5 py-3 sm:px-6">
-        <Link href="/" className="group flex items-baseline gap-1.5">
+        <Link href="/" className="group flex items-center gap-2.5">
+          <Image
+            src="/WATQ_logo_Q_ket_Color_pink_red.png"
+            alt="WatQ logo"
+            width={36}
+            height={36}
+            className="h-8 w-auto"
+          />
           <span className="text-lg font-bold tracking-tight text-ink">
-            WatQ
-          </span>
-          <span className="font-mono text-[10px] text-ink-dim transition-colors group-hover:text-qubit">
-            UWaterloo
+            WATQ
           </span>
         </Link>
 

@@ -11,9 +11,8 @@ export default function Footer() {
   return (
     <footer className="border-t border-white/5 px-6 py-10">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 sm:flex-row">
-        <div className="flex items-baseline gap-1.5">
-          <span className="font-bold text-ink">WatQ</span>
-          <span className="font-mono text-[10px] text-ink-dim">UWaterloo</span>
+        <div className="flex items-center">
+          <span className="font-bold text-ink">WATQ</span>
         </div>
 
         <ul className="flex items-center gap-6">

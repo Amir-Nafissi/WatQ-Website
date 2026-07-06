@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import KineticHeading from "@/components/motion/KineticHeading";
 import Reveal from "@/components/motion/Reveal";
 import TeamGrid from "@/components/team/TeamGrid";
@@ -30,7 +31,23 @@ export default function TeamPage() {
         </Reveal>
       </section>
 
-      <section className="mx-auto mt-20 max-w-6xl">
+      <section className="mx-auto mt-16 max-w-6xl">
+        <Reveal delay={0.3}>
+          <div className="glass overflow-hidden rounded-3xl">
+            <Image
+              src="/WatQ-group-photo.webp"
+              alt="The WatQ team at the University of Waterloo"
+              width={1920}
+              height={1280}
+              priority
+              sizes="(max-width: 1152px) 100vw, 1152px"
+              className="h-auto w-full object-cover"
+            />
+          </div>
+        </Reveal>
+      </section>
+
+      <section className="mx-auto mt-16 max-w-6xl">
         <TeamGrid />
       </section>
     </div>
